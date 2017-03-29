@@ -1,0 +1,4 @@
+applications:
+- name: checkmate-life
+  random-route: true
+  memory: 128M
