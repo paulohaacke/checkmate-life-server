@@ -55,12 +55,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/purpose', dishRouter);
+app.use('/purpose', purposeRouter);
 app.use('/contexts', contextRouter);
 //app.use('/facts', promoRouter);
-app.use('/lifeareas', leaderRouter);
-app.use('/goals', leaderRouter);
-app.use('/tasks', favoriteRouter);
+app.use('/lifeareas', lifeAreaRouter);
+app.use('/goals', goalRouter);
+app.use('/tasks', taskRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

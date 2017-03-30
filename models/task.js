@@ -15,6 +15,12 @@ var taskSchema = new Schema({
         type: String,
         enum: ['todo', 'doing', 'done', 'archive'],
         required: true
+    },
+    postedBy: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
     }
 });
 

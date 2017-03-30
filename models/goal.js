@@ -23,6 +23,12 @@ var goalSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'LifeArea',
         unique: true
+    },
+    postedBy: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
     }
 })
 

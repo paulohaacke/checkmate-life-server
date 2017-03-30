@@ -16,6 +16,12 @@ var lifeAreaSchema = new Schema({
     },
     "color-bg": {
         type: String
+    },
+    postedBy: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
     }
 })
 

@@ -14,7 +14,13 @@ var purposeSchema = new Schema({
     vision: {
         type: String
     },
-    values: [valueSchema]
+    values: [valueSchema],
+    postedBy: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
+    }
 });
 
 var Purpose = mongoose.model('Purpose', purposeSchema);
