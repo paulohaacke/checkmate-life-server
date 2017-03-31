@@ -32,4 +32,37 @@ contextRouter.route('/')
         });
     });
 
+contextRouter.route("/:ctxId")
+    .get(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (dish.comments.id(req.params.ctxId).postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            res.json(context);
+        });
+    })
+    .put(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findOneAndUpdate({
+                _id: req.params.ctxId,
+                postedBy: req.decoded._id
+            }, {
+                $set: req.body
+            }, {
+                new: true
+            },
+            function(err, context) {
+                if (err) next(err);
+                res.json(context);
+            });
+    })
+    .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.remove({ _id: req.params.ctxId, postedBy: req.decoded._id }, function(err, resp) {
+            if (err) return next(err);
+            res.json(resp);
+        });
+    });
+
 module.exports = contextRouter;
