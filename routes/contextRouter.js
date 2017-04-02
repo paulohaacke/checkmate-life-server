@@ -69,7 +69,7 @@ contextRouter.route('/:ctxId/facts')
     .get(Verify.verifyOrdinaryUser, function(req, res, next) {
         Context.findById(req.params.ctxId, function(err, context) {
             if (err) next(err);
-            if (context.postedBy != req.decoded._id) {
+            if (context && context.postedBy != req.decoded._id) {
                 var err = new Error('You are not authorized to perform this operation!');
                 err.status = 403;
                 return next(err);
@@ -80,7 +80,7 @@ contextRouter.route('/:ctxId/facts')
     .post(Verify.verifyOrdinaryUser, function(req, res, next) {
         Context.findById(req.params.ctxId, function(err, context) {
             if (err) next(err);
-            if (context.postedBy != req.decoded._id) {
+            if (context && context.postedBy != req.decoded._id) {
                 var err = new Error('You are not authorized to perform this operation!');
                 err.status = 403;
                 return next(err);
@@ -95,7 +95,7 @@ contextRouter.route('/:ctxId/facts')
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
         Context.findById(req.params.ctxId, function(err, context) {
             if (err) next(err);
-            if (context.postedBy != req.decoded._id) {
+            if (context && context.postedBy != req.decoded._id) {
                 var err = new Error('You are not authorized to perform this operation!');
                 err.status = 403;
                 return next(err);
@@ -112,7 +112,7 @@ contextRouter.route('/:ctxId/facts/:factId')
     .get(Verify.verifyOrdinaryUser, function(req, res, next) {
         Context.findById(req.params.ctxId, function(err, context) {
             if (err) next(err);
-            if (context.postedBy != req.decoded._id) {
+            if (context && context.postedBy != req.decoded._id) {
                 var err = new Error('You are not authorized to perform this operation!');
                 err.status = 403;
                 return next(err);
@@ -121,23 +121,27 @@ contextRouter.route('/:ctxId/facts/:factId')
         });
     })
     .put(Verify.verifyOrdinaryUser, function(req, res, next) {
-        Context.findOneAndUpdate({
-                _id: req.params.ctxId,
-                postedBy: req.decoded._id
-            }, {
-                $pull: { facts: req.params.factId },
-                $push: { facts: req.body }
-            }, {
-                new: true
-            },
-            function(err, context) {
-                if (err) next(err);
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (context && context.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            context.facts.id(req.params.factId).remove();
+            context.facts.push(req.body);
+            context.save(function(err, context) {
+                if (err) return next(err);
                 res.json(context);
-            });
+            })
+        });
     })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
-        Context.findByIdUpdate(req.params.ctxId, {
-            $pull: { facts: req.params.factId }
+        Context.findOneAndUpdate({
+            _id: req.params.ctxId,
+            postedBy: req.decoded._id
+        }, {
+            $pull: { facts: { _id: req.params.factId } }
         }, {
             new: true
         }, function(err, context) {

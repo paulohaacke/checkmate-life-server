@@ -32,4 +32,37 @@ lifeAreaRouter.route('/')
         });
     });
 
+lifeAreaRouter.route("/:lifeAreaId")
+    .get(Verify.verifyOrdinaryUser, function(req, res, next) {
+        LifeArea.findById(req.params.lifeAreaId, function(err, lifeArea) {
+            if (err) next(err);
+            if (lifeArea && lifeArea.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            res.json(lifeArea);
+        });
+    })
+    .put(Verify.verifyOrdinaryUser, function(req, res, next) {
+        LifeArea.findOneAndUpdate({
+                _id: req.params.lifeAreaId,
+                postedBy: req.decoded._id
+            }, {
+                $set: req.body
+            }, {
+                new: true
+            },
+            function(err, lifeArea) {
+                if (err) next(err);
+                res.json(lifeArea);
+            });
+    })
+    .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
+        LifeArea.remove({ _id: req.params.lifeAreaId, postedBy: req.decoded._id }, function(err, resp) {
+            if (err) return next(err);
+            res.json(resp);
+        });
+    });
+
 module.exports = lifeAreaRouter;

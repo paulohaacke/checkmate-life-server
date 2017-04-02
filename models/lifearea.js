@@ -6,11 +6,6 @@ var lifeAreaSchema = new Schema({
         type: String,
         required: true
     },
-    goals: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Goal',
-        unique: true
-    }],
     color: {
         type: String
     },
