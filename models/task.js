@@ -8,8 +8,7 @@ var taskSchema = new Schema({
     },
     goal: {
         type: Schema.Types.ObjectId,
-        ref: 'Goal',
-        unique: true
+        ref: 'Goal'
     },
     state: {
         type: String,
@@ -19,8 +18,7 @@ var taskSchema = new Schema({
     postedBy: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        unique: true
+        ref: 'User'
     }
 });
 

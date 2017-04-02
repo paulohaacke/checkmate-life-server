@@ -21,14 +21,12 @@ var goalSchema = new Schema({
     }],
     lifeArea: {
         type: Schema.Types.ObjectId,
-        ref: 'LifeArea',
-        unique: true
+        ref: 'LifeArea'
     },
     postedBy: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        unique: true
+        ref: 'User'
     }
 })
 

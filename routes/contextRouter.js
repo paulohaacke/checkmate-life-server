@@ -36,7 +36,7 @@ contextRouter.route("/:ctxId")
     .get(Verify.verifyOrdinaryUser, function(req, res, next) {
         Context.findById(req.params.ctxId, function(err, context) {
             if (err) next(err);
-            if (dish.comments.id(req.params.ctxId).postedBy != req.decoded._id) {
+            if (context.postedBy != req.decoded._id) {
                 var err = new Error('You are not authorized to perform this operation!');
                 err.status = 403;
                 return next(err);
@@ -62,6 +62,87 @@ contextRouter.route("/:ctxId")
         Context.remove({ _id: req.params.ctxId, postedBy: req.decoded._id }, function(err, resp) {
             if (err) return next(err);
             res.json(resp);
+        });
+    });
+
+contextRouter.route('/:ctxId/facts')
+    .get(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (context.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            res.json(context.facts);
+        });
+    })
+    .post(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (context.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            req.body.postedBy = req.decoded._id;
+            context.facts.push(req.body);
+            context.save(function(err, context) {
+                res.json(context);
+            })
+        });
+    })
+    .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (context.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            context.facts = [];
+            context.save(function(err, context) {
+                if (err) return next(err);
+                res.json(context);
+            })
+        });
+    });
+
+contextRouter.route('/:ctxId/facts/:factId')
+    .get(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (context.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            res.json(context.facts.id(req.params.factId));
+        });
+    })
+    .put(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findOneAndUpdate({
+                _id: req.params.ctxId,
+                postedBy: req.decoded._id
+            }, {
+                $pull: { facts: req.params.factId },
+                $push: { facts: req.body }
+            }, {
+                new: true
+            },
+            function(err, context) {
+                if (err) next(err);
+                res.json(context);
+            });
+    })
+    .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findByIdUpdate(req.params.ctxId, {
+            $pull: { facts: req.params.factId }
+        }, {
+            new: true
+        }, function(err, context) {
+            if (err) return next(err);
+            res.json(context);
         });
     });
 

@@ -20,8 +20,7 @@ var lifeAreaSchema = new Schema({
     postedBy: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        unique: true
+        ref: 'User'
     }
 })
 
