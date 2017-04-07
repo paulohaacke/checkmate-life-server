@@ -20,9 +20,7 @@ taskRouter.route('/')
         req.body.postedBy = req.decoded._id;
         Task.create(req.body, function(err, task) {
             if (err) return next(err);
-            var id = task._id;
-            res.writeHead(200, { 'Content-type': 'text/plain' });
-            res.end('Added the task with id: ' + id);
+            res.json(task);
         });
     })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {

@@ -20,9 +20,7 @@ lifeAreaRouter.route('/')
         req.body.postedBy = req.decoded._id;
         LifeArea.create(req.body, function(err, lifeArea) {
             if (err) return next(err);
-            var id = lifeArea._id;
-            res.writeHead(200, { 'Content-type': 'text/plain' });
-            res.end('Added the lifeArea with id: ' + id);
+            res.json(lifeArea);
         });
     })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {

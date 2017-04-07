@@ -20,9 +20,7 @@ goalRouter.route('/')
         req.body.postedBy = req.decoded._id;
         Goal.create(req.body, function(err, goal) {
             if (err) return next(err);
-            var id = goal._id;
-            res.writeHead(200, { 'Content-type': 'text/plain' });
-            res.end('Added the goal with id: ' + id);
+            res.json(goal);
         });
     })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
@@ -87,8 +85,9 @@ goalRouter.route('/:goalId/metrics')
             }
             req.body.postedBy = req.decoded._id;
             goal.metrics.push(req.body);
+            var newMetricId = goal.metrics[goal.metrics.length - 1]._id;
             goal.save(function(err, goal) {
-                res.json(goal);
+                res.json(goal.metrics.id(newMetricId));
             })
         });
     })

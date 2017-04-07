@@ -20,9 +20,7 @@ purposeRouter.route('/')
         req.body.postedBy = req.decoded._id;
         Purpose.create(req.body, function(err, purpose) {
             if (err) return next(err);
-            var id = purpose._id;
-            res.writeHead(200, { 'Content-type': 'text/plain' });
-            res.end('Added the purpose with id: ' + id);
+            res.json(purpose);
         });
     })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
@@ -85,10 +83,10 @@ purposeRouter.route('/:purposeId/values')
                 err.status = 403;
                 return next(err);
             }
-            req.body.postedBy = req.decoded._id;
             purpose.values.push(req.body);
+            var newPurposeId = purpose.values[purpose.values.length - 1]._id;
             purpose.save(function(err, purpose) {
-                res.json(purpose);
+                res.json(purpose.values.id(newPurposeId));
             })
         });
     })

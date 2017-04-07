@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var factSchema = new Schema({
     description: {
         type: String,
-        required: true
+        default: ""
     }
 })
 

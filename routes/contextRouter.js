@@ -20,9 +20,7 @@ contextRouter.route('/')
         req.body.postedBy = req.decoded._id;
         Context.create(req.body, function(err, context) {
             if (err) return next(err);
-            var id = context._id;
-            res.writeHead(200, { 'Content-type': 'text/plain' });
-            res.end('Added the context with id: ' + id);
+            res.json(context)
         });
     })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
@@ -85,10 +83,10 @@ contextRouter.route('/:ctxId/facts')
                 err.status = 403;
                 return next(err);
             }
-            req.body.postedBy = req.decoded._id;
             context.facts.push(req.body);
+            var newFactId = context.facts[context.facts.length - 1]._id;
             context.save(function(err, context) {
-                res.json(context);
+                res.json(context.facts.id(newFactId));
             })
         });
     })
@@ -130,6 +128,21 @@ contextRouter.route('/:ctxId/facts/:factId')
             }
             context.facts.id(req.params.factId).remove();
             context.facts.push(req.body);
+            context.save(function(err, context) {
+                if (err) return next(err);
+                res.json(context);
+            })
+        });
+    })
+    .post(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Context.findById(req.params.ctxId, function(err, context) {
+            if (err) next(err);
+            if (context && context.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            context.facts.id(req.params.factId).description = req.body.description;
             context.save(function(err, context) {
                 if (err) return next(err);
                 res.json(context);
