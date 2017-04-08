@@ -9,10 +9,12 @@ var valueSchema = new Schema({
 
 var purposeSchema = new Schema({
     mission: {
-        type: String
+        type: String,
+        default: ""
     },
     vision: {
-        type: String
+        type: String,
+        default: ""
     },
     values: [valueSchema],
     postedBy: {

@@ -134,6 +134,21 @@ purposeRouter.route('/:purposeId/values/:valueId')
             })
         });
     })
+    .post(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Purpose.findById(req.params.purposeId, function(err, purpose) {
+            if (err) next(err);
+            if (purpose && purpose.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            purpose.values.id(req.params.valueId).content = req.body.content;
+            purpose.save(function(err, purpose) {
+                if (err) return next(err);
+                res.json(purpose);
+            })
+        });
+    })
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
         Purpose.findOneAndUpdate({
             _id: req.params.purposeId,
