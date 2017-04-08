@@ -59,7 +59,18 @@ goalRouter.route("/:goalId")
     .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
         Goal.remove({ _id: req.params.goalId, postedBy: req.decoded._id }, function(err, resp) {
             if (err) return next(err);
-            res.json(resp);
+            Goal.update({
+                dependencies: req.params.goalId,
+                postedBy: req.decoded._id
+            }, {
+                $pull: { dependencies: req.params.goalId }
+            }, {
+                new: true,
+                multi: true
+            }, function(err, goal) {
+                if (err) return next(err);
+                res.json(goal);
+            });
         });
     });
 
