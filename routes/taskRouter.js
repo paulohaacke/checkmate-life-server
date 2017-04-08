@@ -30,4 +30,37 @@ taskRouter.route('/')
         });
     });
 
+taskRouter.route("/:taskId")
+    .get(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Task.findById(req.params.taskId, function(err, task) {
+            if (err) next(err);
+            if (task.postedBy != req.decoded._id) {
+                var err = new Error('You are not authorized to perform this operation!');
+                err.status = 403;
+                return next(err);
+            }
+            res.json(task);
+        });
+    })
+    .put(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Task.findOneAndUpdate({
+                _id: req.params.taskId,
+                postedBy: req.decoded._id
+            }, {
+                $set: req.body
+            }, {
+                new: true
+            },
+            function(err, task) {
+                if (err) next(err);
+                res.json(task);
+            });
+    })
+    .delete(Verify.verifyOrdinaryUser, function(req, res, next) {
+        Task.remove({ _id: req.params.taskId, postedBy: req.decoded._id }, function(err, resp) {
+            if (err) return next(err);
+            res.json(resp);
+        });
+    });
+
 module.exports = taskRouter;

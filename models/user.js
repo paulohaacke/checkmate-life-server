@@ -7,23 +7,15 @@ var User = new Schema({
     password: String,
     OauthId: String,
     OauthToken: String,
-    firstname: {
+    email: {
         type: String,
-        default: ''
-    },
-    lastname: {
-        type: String,
-        default: ''
+        required: true
     },
     admin: {
         type: Boolean,
         default: false
     }
 });
-
-User.methods.getName = function() {
-    return (this.firstname + ' ' + this.lastname);
-}
 
 User.plugin(passportLocalMongoose);
 

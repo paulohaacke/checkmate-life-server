@@ -13,7 +13,8 @@ var taskSchema = new Schema({
     state: {
         type: String,
         enum: ['todo', 'doing', 'done', 'archive'],
-        required: true
+        required: true,
+        default: "todo"
     },
     postedBy: {
         required: true,
