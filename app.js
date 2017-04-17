@@ -10,7 +10,14 @@ var passport = require('passport');
 var authenticate = require('./authenticate');
 var config = require('./config');
 
-mongoose.connect(config.mongoUrl);
+var options = {
+    mongos: {
+        ssl: true,
+        sslValidate: false,
+    }
+}
+
+mongoose.connect(config.mongoUrl, options);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
 db.once('open', function() {
@@ -28,12 +35,14 @@ var taskRouter = require('./routes/taskRouter');
 
 var app = express();
 
+app.enable('trust proxy');
+
 //Secure traffic only
 app.all('*', function(req, res, next) {
     if (req.secure) {
         return next();
     }
-    res.redirect('https://' + req.hostname + ':' + app.get('secPort') + req.url);
+    res.redirect('https://' + req.hostname + req.url);
 });
 
 // uncomment after placing your favicon in /public
